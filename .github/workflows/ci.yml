@@ -27,7 +27,7 @@ jobs:
             ${{ runner.os }}-pip-
 
       - name: Install dependencies
-        run: pip install -r requirements.backend.txt pytest pytest-asyncio pytest-cov
+        run: pip install -r requirements.backend.txt pytest pytest-asyncio pytest-cov hypothesis
 
       - name: Set test environment variables
         run: |
