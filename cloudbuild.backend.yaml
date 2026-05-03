@@ -1,0 +1,36 @@
+steps:
+  # 1. Build the backend image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-f', 'Dockerfile.backend', '-t', 'us-central1-docker.pkg.dev/$PROJECT_ID/election-assistant-repo/backend:latest', '.']
+
+  # 2. Push to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'us-central1-docker.pkg.dev/$PROJECT_ID/election-assistant-repo/backend:latest']
+
+  # 3. Deploy to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'election-guide-backend'
+      - '--image'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/election-assistant-repo/backend:latest'
+      - '--region'
+      - 'us-central1'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      - '--timeout'
+      - '300'
+      - '--min-instances'
+      - '1'
+      - '--memory'
+      - '2Gi'
+      - '--set-secrets'
+      - 'GOOGLE_API_KEY=GOOGLE_API_KEY:latest,SECRET_KEY=SECRET_KEY:latest,GOOGLE_CSE_ID=GOOGLE_CSE_ID:latest,GOOGLE_CSE_API_KEY=GOOGLE_CSE_API_KEY:latest'
+      - '--set-env-vars'
+      - 'APP_ENV=production,FIREBASE_PROJECT_ID=election-assistant-494615'
+
+images:
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/election-assistant-repo/backend:latest'

@@ -1,0 +1,28 @@
+# ─────────────────────────────────────────────────────────────────────────────
+#  backend/models/safety_rules.yaml
+#  Policy configuration for the Safety Monitor agent.
+# ─────────────────────────────────────────────────────────────────────────────
+
+policy_rules:
+
+  prohibited_topics:
+    - candidate_comparisons
+    - party_promotion
+    - voting_locations_opinions
+    - personal_financial_advice
+    - election_result_predictions
+    - voter_suppression
+    - political_endorsements
+
+  required_disclaimers:
+    - "AI-generated educational content"
+    - "Verify with local election office"
+
+  rate_limits:
+    anonymous: "10 requests/minute"
+    authenticated: "30 requests/minute"
+
+  hallucination_prevention:
+    require_source_for_deadlines: true
+    max_retrieval_contexts: 5
+    similarity_threshold: 0.75

@@ -1,0 +1,203 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap');
+
+:root {
+    /* Base Colors - Adapted from Streamlit/System */
+    --primary: #2563eb;
+    --primary-light: #3b82f6;
+    --primary-dark: #1e40af;
+    
+    /* Default (Dark Mode) */
+    --bg-main: #0f172a;
+    --bg-card: #1e293b;
+    --bg-card-alt: #334155;
+    --text-main: #f8fafc;
+    --text-dim: #94a3b8;
+    --border: #334155;
+    --shadow: rgba(0, 0, 0, 0.4);
+    --bot-gradient: linear-gradient(135deg, #1e293b, #0f172a);
+    --user-gradient: linear-gradient(135deg, #2563eb, #1e40af);
+}
+
+/* Light Mode Overrides - Targets Streamlit's light background */
+@media (prefers-color-scheme: light) {
+    :root {
+        --bg-main: #f8fafc;
+        --bg-card: #ffffff;
+        --bg-card-alt: #f1f5f9;
+        --text-main: #0f172a;
+        --text-dim: #475569;
+        --border: #e2e8f0;
+        --shadow: rgba(0, 0, 0, 0.05);
+        --bot-gradient: linear-gradient(135deg, #ffffff, #f1f5f9);
+        --user-gradient: linear-gradient(135deg, #2563eb, #3b82f6);
+    }
+}
+
+/* Global Styles */
+html, body, [class*="css"] {
+    font-family: 'Inter', sans-serif;
+}
+
+h1, h2, h3 {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+}
+
+.main {
+    background-color: var(--bg-main);
+}
+
+/* Skip navigation */
+.skip-nav {
+    position: absolute;
+    top: -60px;
+    left: 10px;
+    background: var(--primary);
+    color: white;
+    padding: 10px 20px;
+    z-index: 9999;
+    border-radius: 8px;
+    transition: top 0.3s ease;
+}
+.skip-nav:focus { top: 10px; }
+
+/* Hero Header */
+.hero-header {
+    text-align: center;
+    padding: 40px 20px;
+    background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+    border-radius: 24px;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 25px rgba(37, 99, 235, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Chat bubbles */
+.user-bubble {
+    background: var(--user-gradient);
+    color: white !important;
+    border-radius: 20px 20px 4px 20px;
+    padding: 16px 22px;
+    margin: 12px 0;
+    max-width: 80%;
+    margin-left: auto;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    font-weight: 500;
+    line-height: 1.5;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.bot-bubble {
+    background: var(--bot-gradient);
+    border: 1px solid var(--border);
+    color: var(--text-main) !important;
+    border-radius: 20px 20px 20px 4px;
+    padding: 18px 24px;
+    margin: 12px 0;
+    max-width: 85%;
+    box-shadow: 0 4px 15px var(--shadow);
+    line-height: 1.6;
+}
+
+/* Source & Reading Badges */
+.source-badge {
+    display: inline-flex;
+    align-items: center;
+    background: var(--bg-card-alt);
+    color: var(--primary-light);
+    border-radius: 12px;
+    padding: 6px 14px;
+    font-size: 0.85rem;
+    margin: 4px;
+    border: 1px solid var(--primary-light);
+    font-weight: 600;
+}
+
+.reading-badge {
+    display: inline-block;
+    background: #0d9488;
+    color: white;
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin-left: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Disclaimer Bar */
+.disclaimer-bar {
+    background: var(--bg-card-alt);
+    border-left: 6px solid #10b981;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin: 20px 0;
+    font-size: 0.9rem;
+    color: var(--text-main);
+    box-shadow: 0 4px 6px var(--shadow);
+}
+
+/* Input Fields */
+.stTextInput > div > div > input {
+    border-radius: 30px !important;
+    border: 2px solid var(--border) !important;
+    background: var(--bg-card) !important;
+    color: var(--text-main) !important;
+    padding: 12px 25px !important;
+    font-size: 1rem !important;
+    transition: all 0.3s ease !important;
+}
+
+.stTextInput > div > div > input:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15) !important;
+}
+
+/* Buttons */
+.stButton > button {
+    border-radius: 30px !important;
+    font-weight: 600 !important;
+    transition: all 0.2s ease !important;
+}
+
+.stButton > button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2) !important;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-main); }
+::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--primary-light); }
+
+/* Animations */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.bot-bubble, .user-bubble {
+    animation: fadeInUp 0.4s ease-out both;
+}
+
+/* Sidebar Styling */
+[data-testid="stSidebar"] {
+    background-color: var(--bg-card) !important;
+    border-right: 1px solid var(--border);
+}
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+    .user-bubble, .bot-bubble {
+        max-width: 95%;
+    }
+    .hero-header {
+        padding: 25px 15px;
+    }
+}

@@ -1,0 +1,45 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: election-guide-assistant
+  labels:
+    cloud.googleapis.com/location: us-central1
+  annotations:
+    run.googleapis.com/ingress: all
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "1"
+        autoscaling.knative.dev/maxScale: "10"
+        run.googleapis.com/cpu-throttling: "false"
+    spec:
+      containerConcurrency: 80
+      timeoutSeconds: 300
+      containers:
+        - image: gcr.io/PROJECT_ID/election-assistant:latest
+          ports:
+            - containerPort: 8501
+          resources:
+            limits:
+              cpu: "2"
+              memory: 1Gi
+          env:
+            - name: APP_ENV
+              value: production
+            - name: GOOGLE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: election-secrets
+                  key: GOOGLE_API_KEY
+            - name: FIREBASE_PROJECT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: election-secrets
+                  key: FIREBASE_PROJECT_ID
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 10

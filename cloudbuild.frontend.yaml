@@ -1,0 +1,28 @@
+steps:
+  # 1. Build the frontend image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-f', 'Dockerfile.frontend', '-t', 'us-central1-docker.pkg.dev/$PROJECT_ID/election-assistant-repo/frontend:latest', '.']
+
+  # 2. Push to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'us-central1-docker.pkg.dev/$PROJECT_ID/election-assistant-repo/frontend:latest']
+
+  # 3. Deploy to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'election-guide-frontend'
+      - '--image'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/election-assistant-repo/frontend:latest'
+      - '--region'
+      - 'us-central1'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      - '--port'
+      - '8501'
+
+images:
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/election-assistant-repo/frontend:latest'

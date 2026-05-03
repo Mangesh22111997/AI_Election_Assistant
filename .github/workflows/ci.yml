@@ -1,0 +1,80 @@
+name: Election Guide CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.backend.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: pip install -r requirements.backend.txt pytest pytest-asyncio pytest-cov
+
+      - name: Set test environment variables
+        run: |
+          echo "GOOGLE_API_KEY=test-key-for-ci" >> $GITHUB_ENV
+          echo "FIREBASE_PROJECT_ID=test-project" >> $GITHUB_ENV
+          echo "FIREBASE_DATABASE_URL=https://test.firebaseio.com" >> $GITHUB_ENV
+          echo "GOOGLE_CSE_API_KEY=test-key" >> $GITHUB_ENV
+          echo "GOOGLE_CSE_ID=test-id" >> $GITHUB_ENV
+          echo "SECRET_KEY=test-secret-key-32-characters-minimum" >> $GITHUB_ENV
+          echo "APP_ENV=development" >> $GITHUB_ENV
+
+      - name: Run tests with coverage
+        run: pytest tests/ -v --cov=backend --cov-report=xml --cov-report=term-missing
+        env:
+          PYTHONPATH: .
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage.xml
+          flags: unittests
+          fail_ci_if_error: false
+
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install flake8
+        run: pip install flake8
+
+      - name: Run flake8 lint check
+        run: flake8 backend/ --count --max-line-length=100 --statistics
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pip-audit
+        run: pip install pip-audit
+      - name: Audit dependencies
+        run: pip-audit --requirement requirements.backend.txt

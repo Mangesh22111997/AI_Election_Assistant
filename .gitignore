@@ -1,0 +1,56 @@
+# ── Python ────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+*.whl
+
+# ── Virtual Environments ──────────────────────
+venv/
+.venv/
+env/
+ENV/
+
+# ── Environment & Secrets ────────────────────
+.env
+.env.*
+!.env.example
+firebase-adminsdk.json
+*.json.key
+service-account*.json
+firebase-key.json
+google-logging-credentials.json
+
+# ── IDE ──────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ── Testing / Coverage ────────────────────────
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# ── Logs ─────────────────────────────────────
+logs/
+*.log
+
+# ── PDF Data (Sources) ───────────────────────
+data/pdf_data/
+data/chromadb/
+data/vector_store/
+
+# ── Docker ───────────────────────────────────
+*.env.docker
+
+# ── Streamlit ────────────────────────────────
+.streamlit/secrets.toml
