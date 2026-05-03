@@ -77,7 +77,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         model=settings.gemini_model,
     )
     # Eagerly initialise agents on startup
-    _get_agents()
+    _get_orchestrator()
     yield
     logger.info("Election Guide Assistant shutting down")
 
@@ -105,10 +105,19 @@ app = FastAPI(
 # ── Middleware ─────────────────────────────────────────────────────────────────
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"] if not settings.is_production else [settings.backend_url],
+    allow_origins=(
+        ["*"]
+        if not settings.is_production
+        else [settings.frontend_url, settings.backend_url]
+    ),
+    allow_origin_regex=(
+        None
+        if settings.is_production
+        else r"http://localhost:\d+"
+    ),
     allow_credentials=True,
     allow_methods=["GET", "POST", "OPTIONS"],
-    allow_headers=["*"],
+    allow_headers=["Authorization", "Content-Type", "X-Request-ID"],
 )
 # Security Headers Middleware
 

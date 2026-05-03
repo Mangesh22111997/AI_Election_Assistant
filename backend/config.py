@@ -62,7 +62,14 @@ class Settings(BaseSettings):
     rate_limit_period: int = Field(default=60, ge=1, description="Rate-limit window in seconds")
 
     # ── Network ───────────────────────────────────────────────────────────────
-    backend_url: str = Field(default="http://localhost:8000")
+    backend_url: str = Field(
+        default="http://localhost:8000",
+        description="Backend URL for internal self-referencing (health pings)"
+    )
+    frontend_url: str = Field(
+        default="http://localhost:8501",
+        description="Frontend origin URL for CORS whitelist in production"
+    )
     frontend_port: int = Field(default=8501)
     backend_port: int = Field(default=8000)
 

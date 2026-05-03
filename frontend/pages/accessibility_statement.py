@@ -7,9 +7,15 @@ Required by EN 301 549 and recommended by WCAG 2.4.1.
 import streamlit as st
 
 st.set_page_config(
-    page_title="Accessibility Statement — Election Guide",
+    page_title="Accessibility Statement",
     page_icon="♿",
     layout="wide"
+)
+
+# WCAG 3.1.1: Language of Page
+st.markdown(
+    "<script>document.documentElement.lang = 'en';</script>",
+    unsafe_allow_html=True
 )
 
 # Inject the global styles

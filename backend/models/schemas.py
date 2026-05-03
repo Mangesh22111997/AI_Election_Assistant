@@ -114,12 +114,20 @@ class ChatRequest(BaseModel):
         return v.strip()
 
 
+class SourceItem(BaseModel):
+    """A single source citation with provenance."""
+    document: str
+    page: int = 0
+    url: str | None = None
+    score: float | None = None
+
+
 class AgentResponse(BaseModel):
     """Structured response from the agent pipeline."""
-
     answer: str
     simplified: str
-    sources: list[str] = Field(default_factory=list)
+    sources: list[SourceItem] = Field(default_factory=list)
+    source_urls: list[str] = Field(default_factory=list)
     intent: Intent = "other"
     safety_passed: bool = True
     disclaimer: str = (
