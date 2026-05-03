@@ -39,7 +39,6 @@ from backend.models.schemas import (
     HealthResponse,
 )
 from backend.services.firebase_service import get_firebase_service
-from backend.services.feedback_service import get_feedback_service
 from backend.services.response_cache import get_response_cache
 from backend.services.rate_limiter import get_rate_limiter, limiter
 from backend.utils.logger import configure_logging, get_logger, log_interaction
@@ -164,8 +163,9 @@ async def health_check() -> HealthResponse:
     # 1. Check Gemini
     try:
         gemini = get_gemini_service()
-        # Mock ping or check if key exists
-        status_map["dependencies"]["gemini"] = "healthy" if gemini.api_key else "unhealthy"
+        status_map["dependencies"]["gemini"] = (
+            "healthy" if gemini.is_configured else "unhealthy"
+        )
     except Exception:
         status_map["dependencies"]["gemini"] = "unhealthy"
         status_map["status"] = "degraded"
@@ -173,7 +173,9 @@ async def health_check() -> HealthResponse:
     # 2. Check Firebase
     try:
         firebase = get_firebase_service()
-        status_map["dependencies"]["firebase"] = "healthy" if firebase.db else "unhealthy"
+        status_map["dependencies"]["firebase"] = (
+            "healthy" if firebase.is_available() else "offline"
+        )
     except Exception:
         status_map["dependencies"]["firebase"] = "unhealthy"
         status_map["status"] = "degraded"
@@ -272,17 +274,30 @@ async def chat(
             "latency_ms": result["latency_ms"],
         })
 
-    return ChatResponse(
-        conversation_id=conversation_id,
-        message=AgentResponse(
-            answer=result["response"],
-            simplified=result["response"],
-            sources=result["sources"],
+        # ── Step 6: Structured audit log ─────────────────────────────────────────
+        log_interaction(
+            user_id=body.user_id,
+            query=body.query,
             intent=result.get("intent", "other"),
-            safety_passed=not result.get("safety_blocked", False),
-            latency_ms=result["latency_ms"],
-        ),
-    )
+            guide_latency_ms=result.get("latency_ms", 0),
+            simplifier_latency_ms=0,
+            safety_result="blocked" if result.get("safety_blocked") else "passed",
+            violation_type=result.get("violation_type"),
+            sources_used=result.get("sources", []),
+        )
+
+        return ChatResponse(
+            conversation_id=conversation_id,
+            message=AgentResponse(
+                answer=result["response"],
+                simplified=result["response"],
+                sources=result.get("sources", []),
+                source_items=[],
+                intent=result.get("intent", "other"),
+                safety_passed=not result.get("safety_blocked", False),
+                latency_ms=result.get("latency_ms", 0),
+            ),
+        )
 
 
 @app.post(

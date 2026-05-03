@@ -126,7 +126,8 @@ class AgentResponse(BaseModel):
     """Structured response from the agent pipeline."""
     answer: str
     simplified: str
-    sources: list[SourceItem] = Field(default_factory=list)
+    sources: list[str] = Field(default_factory=list)          # plain names — always populated
+    source_items: list[SourceItem] = Field(default_factory=list)  # rich type — populated when available
     source_urls: list[str] = Field(default_factory=list)
     intent: Intent = "other"
     safety_passed: bool = True

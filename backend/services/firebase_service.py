@@ -74,6 +74,10 @@ class FirebaseService:
     def __init__(self) -> None:
         _init_firebase()
 
+    def is_available(self) -> bool:
+        """Return True if Firestore is initialised and reachable."""
+        return _firestore_client is not None
+
     # ── Conversation CRUD ─────────────────────────────────────────────────────
 
     def save_conversation(self, conversation_id: str, data: dict[str, Any]) -> bool:

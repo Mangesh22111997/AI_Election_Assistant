@@ -122,6 +122,18 @@ class GeminiService:
     def usage(self) -> dict[str, int]:
         return dict(self._usage)
 
+    @property
+    def api_key(self) -> str:
+        """Return the configured API key (masked for security)."""
+        key = settings.google_api_key
+        return f"{key[:8]}...{key[-4:]}" if len(key) > 12 else "[configured]"
+
+    @property
+    def is_configured(self) -> bool:
+        """Return True if the API key is set and valid."""
+        key = settings.google_api_key
+        return bool(key and key != "your_gemini_api_key_here")
+
     # ── Private Helpers ───────────────────────────────────────────────────────
 
     @retry(
