@@ -14,7 +14,7 @@ Cache invalidation: time-based (24hr) to ensure election deadline accuracy.
 import hashlib
 import json
 import time
-from typing import Optional
+from typing import Any, Optional
 from functools import lru_cache
 from backend.utils.logger import get_logger
 
@@ -31,7 +31,7 @@ class ResponseCache:
     """
 
     def __init__(self, faq_path: str = "data/faq_dataset.json"):
-        self._exact: dict[str, tuple[str, float]] = {}   # hash -> (response, timestamp)
+        self._exact: dict[str, tuple[dict[str, Any], float]] = {}   # hash -> (response, timestamp)
         self._faq = self._load_faq(faq_path)
         self._hits = 0
         self._misses = 0
@@ -54,9 +54,13 @@ class ResponseCache:
             logger.warning(f"FAQ file not loaded: {exc}")
             return {}
 
+    def _normalise_query(self, query: str) -> str:
+        """Normalise query spacing and case for consistent cache lookup."""
+        return " ".join(query.lower().strip().split())
+
     def _hash_query(self, query: str) -> str:
         """Normalise and hash a query for exact-match lookup."""
-        normalised = query.lower().strip().replace("  ", " ")
+        normalised = self._normalise_query(query)
         return hashlib.sha256(normalised.encode()).hexdigest()[:16]
 
     def get(self, query: str) -> Optional[dict]:
@@ -75,7 +79,7 @@ class ResponseCache:
                 del self._exact[key]   # Expired
 
         # L3: FAQ keyword match (simple containment)
-        query_lower = query.lower().strip()
+        query_lower = self._normalise_query(query)
         for faq_q, faq_a in self._faq.items():
             if faq_q in query_lower or query_lower in faq_q:
                 self._hits += 1
